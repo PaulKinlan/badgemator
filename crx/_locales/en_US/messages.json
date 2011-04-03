@@ -1,0 +1,10 @@
+{
+  "extName" : {
+    "message" : "Badgemator",
+    "description" : "Extension Name"
+  },
+  "extDesc" : {
+    "message" : "Quickly create a badge for your site to advertise your app",
+    "description" : "Extension Description"
+  }
+}

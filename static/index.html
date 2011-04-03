@@ -1,0 +1,324 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Create a badge for your app</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="/js/moustache.js"></script>
+    <script type="text/javascript" src="/js/codemirror.js"></script>
+    <script type="text/javascript" src="/js/builder.js"></script>
+    <link src="/css/csscolors.css"></link>
+    <meta name="google-site-verification" content="giZg2GBz30YubQK1LdzRGlQBGHjMWhUeeSO8TR_uiwE" />
+    <link rel="shortcut icon" href="/images/16.png" type="image/png" />
+    <link rel="shortcut icon" href="/images/128.png" sizes="128x128" type="image/png" />
+    <link rel="license" href="/LICENCE" />
+    <link rel="author" href="mailto://paulkinlan@google.com" />
+    <link href='http://fonts.googleapis.com/css?family=Cuprum&subset=latin' rel='stylesheet' type='text/css' />
+    <link href='/css/main.css' rel='stylesheet' type='text/css' />
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var url = document.getElementById("url");
+        var information = document.getElementById("information");
+        var style = document.getElementById("style");
+        var hidden_image = document.getElementById("install_image_hidden");
+        
+        document.getElementById("app_name").addEventListener("change", updateUI);
+        document.getElementById("install_message").addEventListener("change", updateUI);
+        hidden_image.addEventListener("change", updateUI);
+        document.getElementById("install_image").addEventListener("change", updateUI);
+        document.getElementById("message").addEventListener("change", updateUI);
+        document.getElementById("cancel_message").addEventListener("change", updateUI);
+        document.getElementById("css_url").addEventListener("change", updateUI);
+        document.getElementById("code").addEventListener("change", updateUI);
+        
+        url.addEventListener("keypress", function(e) {
+          if(e.keyCode == 13) {
+            Builder.start(function(object) {
+              // Make the UI visible
+              if(object) {
+                style.classList.add("success");
+                information.classList.add("success");
+                hidden_image.value = object.image_uri;
+                updateUI();
+              }
+              else {
+                url.classList.add("error");
+              }
+            });
+          }
+          else {
+            url.classList.remove("error");
+            url.classList.remove("success");
+          }
+        });
+        
+        
+        // If there is a hash, lets just load it all now.
+        if(window.location.hash && window.location.hash !="") {
+          var newUrl = window.location.hash.substr(1);
+          document.getElementById("url").value = newUrl;
+          
+          Builder.start(function(object) {
+            // Make the UI visible
+            if(object) {
+              style.classList.add("success");
+              information.classList.add("success");
+              hidden_image.value = object.image_uri;
+              updateUI();
+            }
+            else {
+              url.classList.add("error");
+            }
+          });
+          
+        }
+        
+        updateUI();
+      });
+      
+      var updateUI = function() {
+        
+        var form = document.getElementById("app_info");
+        if(!!form) {
+          if(form.checkValidity()) {
+            form.className = "valid";
+          }
+          else {
+            form.className = "invalid";
+          }
+        }
+        
+        renderSource();
+      };
+      
+      var getStyleSheet = function(title) {
+        var styleSheet;
+        
+        for(var i in document.styleSheets) {
+          if(document.styleSheets[i].title == title) {
+            return document.styleSheets[i];
+          }
+        }
+        
+        return styleSheet;
+      };
+      
+      var dictionaryToQueryString = function(opts) {
+        var output = [];
+        for(var i in opts) {
+          output.push(i + "=" + opts[i]);
+        }
+        return output.join("&");
+      };
+      
+      var undefinedIfEmpty = function(val) {
+        if(val == "") return undefined;
+        else return val;
+      };
+      
+      var elementValue = function(element) {
+        return undefinedIfEmpty(document.getElementById(element).value);
+      };
+      
+      var toDataURI = function(datatype, data) {
+        return "data:" + datatype +";base64," + window.btoa(data);
+      };
+      
+      var generateSource = function(renderFunction) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/badge-raw.js");
+        xhr.send();
+        xhr.addEventListener("readystatechange", function() {
+          if(xhr.readyState == 4 && xhr.status == 200) {
+            renderFunction(xhr.responseText);
+          }
+        });
+      };
+      
+      var renderStyle = function() {
+        var style = document.getElementById("style");
+        style.innerText = generateStyles("badge");        
+      };
+      
+      var generateStyles = function(title) {
+        var badgeSheet = getStyleSheet(title);
+        
+        var output = "";
+        
+        for(var r=0; r < badgeSheet.rules.length; r++) {
+          output += badgeSheet.rules[r].cssText + "\n";
+        }
+        
+        return output;
+      };
+      
+      var toObjectURL = function(contentType, data) {
+        window.URL = window.URL || window.webkitURL;
+
+        var bb = new BlobBuilder();
+        bb.append(data);
+        if(window.URL) {
+          return window.URL.createObjectURL(bb.getBlob(contentType));
+        }
+        else {
+          return window.createObjectURL(bb.getBlob(contentType));
+        }
+      };
+      
+      var updatePreview = function(source) {
+        clearStylesheet("webstore_badge");
+        var output = document.getElementById("output");
+        var oldScript = document.getElementById("previewScript");
+        var old_badge = document.querySelector("._webstore_badge");
+        var script = document.createElement("script");
+        
+        if(!!old_badge) {
+          old_badge.parentNode.removeChild(old_badge);
+        }
+        if(!!oldScript) {
+          document.head.removeChild(oldScript);
+        }
+        
+        script.id = "previewScript";
+        script.src = toObjectURL("text/javascript", source);
+        output.href = script.src;
+        
+        document.head.appendChild(script);
+      };
+      
+      var clearStylesheet = function(title) {
+        var badgeSheet = getStyleSheet(title);
+        if(badgeSheet == undefined) return;
+        
+        badgeSheet.title = "";
+        badgeSheet.disabled = true;
+      };
+      
+      var renderSource = function() {
+        var source;
+        var opts = {
+          install_message: elementValue("install_message"),
+          message: elementValue("message"),
+          install_image: elementValue("install_image") || elementValue("install_image_hidden"),
+          cancel_message: elementValue("cancel_message"),
+          cancel_image: elementValue("cancel_image"),
+          css_url: elementValue("css_url"),
+          app_name: elementValue("app_name"),
+          url: elementValue("url")
+        };
+        
+        if(!!opts.css_url == false) {
+          opts.css_url = toDataURI("text/css", document.getElementById("code").textContent);
+        }
+        
+        generateSource(function(output) { updatePreview(Mustache.to_html(output, opts)); });
+      };
+    </script>
+  </head>
+  <body>
+    <div id="input">
+      <h1>Create a badge for your app:</h1>
+      <input type="url" id="url" required placeholder="https://chrome.google.com/webstore/detail/dhbgookgdfbbinnmmkbmjgolhikbbhpj# [Enter]"><br/>
+    </div>
+    <div id="information">
+      <form id="app_info">
+        <label for="message">Message</label><input type="text" id="message" placeholder="The welcome message" value="Try our app in the Chrome Web Store"> <br/>
+        <label for="install_message">Install message</label><input type="text" id="install_message" placeholder="Default: 'Install'"> <br/>
+        <label for="install_image">Install image</label><input type="url" id="install_image" placeholder="The image to use in the install link" value=""> <br/>
+        <input type="hidden" id="install_image_hidden">
+        <label for="cancel_message">Cancel message</label><input type="text" id="cancel_message" placeholder="The text to use to cancel the link"><br/>
+         <label for="cancel_image">Cancel image</label><input type="url" id="cancel_image" placeholder="The image to use in the cancel link" value="http://cws-badge.appspot.com/images/cancel.png"> <br/>
+        <label for="css_url">Style sheet URL</label><input type="url" id="css_url" placeholder="Want to use a custom external stylesheet?"><br/>
+        <label for="app_name">App name</label><input type="text" id="app_name" placeholder="The name of your app"> <br/>
+        <div id="download">
+          <div class="valid">
+            <h3>Your badge is ready</h3>
+            <div><a href="" id="output" target="_blank">Save the script</a> to your server (rename to badge.js)</div>
+            <div>Add it to your html <code>&lt;script src="badge.js"&gt;</code></div>
+          </div>
+          <div class="invalid">
+            <h3>Sorry. Missing info - check your app ID</h3>
+          </div>
+        </div>
+      </form>
+      <canvas id="c128" width=128 height=128></canvas>
+    </div>
+    <div id="style">
+      <h3>Style Editor</h3>
+      <textarea id="code" cols="120" rows="40">._webstore_badge {
+  width: 128px;
+  height: 190px;
+  top: 0px;
+  right: 0px;
+  position: absolute;
+  margin: 0 50px 0 50px;
+  padding: 5px;
+  box-shadow: #000 0 0 5px;
+  background-color: #eae88c;
+  border: solid 1px #c9c778;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  display: inline;
+  font-family: Arial;
+  opacity: 1;
+  -webkit-transition: all 0.5s ease-in-out;
+}
+
+._webstore_badge:hover {
+  background-color: #f2f090;
+}
+
+._webstore_badge ._webstore_message {
+  width: 100%;
+  text-shadow: #111 0px 0px 2px;
+  text-align: center;
+  font-weight: 700;
+  display: block;
+}
+
+._webstore_badge ._webstore_install {
+  width: 128px;
+  height: 128px;
+  margin-top: 5px;
+  display: block;
+}
+
+._webstore_badge ._webstore_cancel {
+  top: 0;
+  right: 2px;
+  position: absolute;
+  opacity: 0;
+  -webkit-transition: all 0.2s ease-in-out;
+}
+
+._webstore_badge:hover ._webstore_cancel {
+  opacity: 1;
+}</textarea>
+    </div>
+  </body>
+  <script type="text/javascript"> 
+  var editor = CodeMirror.fromTextArea('code', {
+    width: "100%",
+    parserfile: "parsecss.js",
+    stylesheet: "css/csscolors.css",
+    path: "js/",
+    iframeClass: "code", 
+    continuousScanning:500,
+    textWrapping : true,
+    onChange: function() { document.getElementById("code").textContent = editor.getCode(); updateUI(); }
+  });
+
+</script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-114468-24']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</html>

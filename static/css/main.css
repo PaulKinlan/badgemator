@@ -1,0 +1,254 @@
+input[type="file"] {
+  color: white;
+  margin: 0px;
+}
+
+::-webkit-file-upload-button {
+  -webkit-appearance: square-button;
+}
+
+body {
+  background-color: #1F2434;
+  color: white;
+  margin: 50px 50px 0 50px;
+  display:block;
+  font-family: "Cuprum";
+}
+
+#header {
+  -webkit-box-flex: 1;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: justify;
+  -webkit-box-align: center;
+  margin: 20% 20% 0 20%;
+  text-align: left;
+  -webkit-transition: margin 0.2s ease-in-out;
+}
+
+#header.started {
+  margin-top: 1%;
+}
+
+#header h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 4em;
+}
+
+input {
+  border-radius: 10px;
+  margin-top: 5px;
+  padding: 5px;
+  background-color: rgba(255,255,255, 0.9);
+  color: black;
+  outline-style: none;
+  border: none;
+  box-shadow: inset 0 0 3px 0 #000000;
+  width: 50%;
+  -webkit-transform: background-color 0.2s ease-in-out;
+  transform: background-color 0.2s ease-in-out;
+}
+
+#input h1 {
+  margin-bottom: 5px;
+}
+
+#input input[type=url] {
+  font-size: 2em;
+  width: 80%;
+  background-color: rgba(255,255,255, 0.9);
+}
+
+input[type=url] + #messages > p {
+  display:none;
+}
+/*
+input[type=url]:invalid {
+  background-color: rgba(255,0,0, 0.2);
+}*/
+
+input[type=url]:valid + #messages > #okUrl {
+  display: block;
+}
+
+input[type=url]:invalid + #messages > #enterUrl {
+  display: block;
+}
+
+
+
+input[type=url].error {
+  background-color: rgba(255,0,0, 0.2);
+}
+
+input[type=url].success {
+  background-color: rgba(0,128,0, 0.2);
+}
+
+#app {
+  display: none;
+}
+
+form #download {
+  margin: 40px 0 10px 0;
+  padding: 20px 0 20px 0;
+  border-radius: 10px;
+  background-color: rgba(255,255,255, 0.2);
+  text-align: center;
+}
+
+form #download a {
+  color: white;
+}
+
+form.valid #download .invalid {
+  display:none;
+}
+
+form.valid #download .valid {
+  display:block;
+}
+
+form.invalid #download {
+  background-color: rgba(255,0,0, 0.2);
+}
+
+form.invalid #download .valid {
+  display:none;
+}
+
+form.invalid #download .invalid {
+  display:block;
+}
+
+#download.visible {
+  display: block;
+}
+
+#download h3 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#info {
+ display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: justify;
+  -webkit-box-align: start;
+  width: 100%;
+}
+
+#info > div {
+  -webkit-box-flex: 1;
+}
+
+#app {
+  display: none;
+  -webkit-box-orient: horizontal;
+  -webkit-box-pack: justify;
+  -webkit-box-align: stretch;
+  padding: 0;
+  -webkit-transition: opacity 1s ease-in-out;
+}
+
+#app.visible {
+  display: -webkit-box;
+}
+
+#app fieldset {
+  -webkit-box-flex: 1;
+}
+
+label {
+  width: 20%;
+  display: inline-block;
+}
+
+label[type=radio] {
+  width: auto;
+}
+label[type=checkbox] {
+  width: auto;
+}
+
+.images .image {
+  float: left;
+}
+
+.images .image h3 {
+  margin-top: 0px;
+}
+
+.inset {
+  padding-left: 10px;
+}
+
+#app.visible {
+  display: -webkit-box;
+}
+
+#warning {
+  display: none;
+  background-color: rgba(255,0,0, 0.2);
+  margin: 20px 20% 0 20%;
+  padding: 20px 0 20px 0;
+  border-radius: 10px;
+  text-align: center;
+}
+
+canvas {
+  display:none;
+}
+
+section {
+  margin: 20px 20% 0 20%;
+}
+
+#doubleclicksave {
+  display: none;
+}
+
+#information {
+  display: none;
+}
+
+#information.success {
+  display: block;
+}
+
+#style {
+  display: none;
+}
+
+#style.success {
+  display: block;
+}
+
+.code {
+  background-color: white;
+}
+
+#source {
+  width: 400px;
+  overflow: scroll;
+}
+
+#app_id {
+  -webkit-transition: all 0.5s ease-in-out;
+}
+
+#app_id:required:invalid {
+  /*background-color: rgba(255,0,0, 0.2);*/
+}
+
+#app_id:invalid {
+  background-color: rgba(255,0,0, 0.2);
+}
+
+#css_url:invalid {
+  background-color: rgba(255,0,0, 0.2);
+}
+
+form:invalid #download {
+  background-color: rgba(255,0,0, 0.2);
+}
