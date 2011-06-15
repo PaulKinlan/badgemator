@@ -49,7 +49,7 @@ class FetchInformationHandler(webapp.RequestHandler):
       # get the data
       imageMatch = re.search(image, html, flags=re.IGNORECASE)
       if imageMatch:
-        meta["image"] = "https://chrome.google.com%s" % imageMatch.group(1)
+        meta["image"] = "http:" + imageMatch.group(1)
       
     else:
       self.response.status_code = fetcheddata.status_code

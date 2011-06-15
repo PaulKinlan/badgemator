@@ -154,7 +154,7 @@
       var toObjectURL = function(contentType, data) {
         window.URL = window.URL || window.webkitURL;
 
-        var bb = new BlobBuilder();
+        var bb = new (window.BlobBuilder || window.WebKitBlobBuilder)();
         bb.append(data);
         if(window.URL) {
           return window.URL.createObjectURL(bb.getBlob(contentType));
