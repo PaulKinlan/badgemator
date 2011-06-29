@@ -26,7 +26,7 @@
       }
       
       var link = document.createElement("a");
-      link.href = url;
+      link.href = app_id;
       link.target = "_blank";
       link.className = "_webstore_install";
       container.appendChild(link);
