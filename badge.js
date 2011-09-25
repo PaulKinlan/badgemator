@@ -29,6 +29,16 @@
       link.href = app_id;
       link.target = "_blank";
       link.className = "_webstore_install";
+      link.addEventListener("click", function(e) {
+         if(chrome && chrome.webstore && chrome.webstore.install) {
+           e.preventDefault();
+           chrome.webstore.install(app_id,
+             function() { container.style.display = "none"; }, // hide the window
+             function() { window.location = app_id; } // Send the user to the page.
+            );
+           return false;
+         }
+      }, false);
       container.appendChild(link);
        
       if(install_message) {
